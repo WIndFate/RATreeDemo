@@ -258,8 +258,8 @@
 		EFD0D4EC231525A40049D3C2 /* NameCardModel */ = {
 			isa = PBXGroup;
 			children = (
-				EFD0D4ED231525A40049D3C2 /* NameCardModel.m */,
 				EFD0D4EE231525A40049D3C2 /* NameCardModel.h */,
+				EFD0D4ED231525A40049D3C2 /* NameCardModel.m */,
 			);
 			path = NameCardModel;
 			sourceTree = "<group>";

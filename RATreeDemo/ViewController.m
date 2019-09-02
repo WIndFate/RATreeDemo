@@ -51,36 +51,54 @@
     //注册单元格
     [self.raTreeView registerNib:[UINib nibWithNibName:@"NameCardTitleCell" bundle:nil] forCellReuseIdentifier:@"NameCardCell"];
     [self.raTreeView registerNib:[UINib nibWithNibName:@"PersonNameCell" bundle:nil] forCellReuseIdentifier:@"PersonNameCell"];
-}
-
-
-//循环遍历
--(void)recursiveAllChildrens:(NSArray *)array withFather:(NameCardModel *)father {
     
-    
-    [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.raTreeView reloadData];
+    for (NameCardModel *item in [self.raTreeView itemsForRowsInRect:self.raTreeView.frame]) {
         
-        NSDictionary *dic = (NSDictionary *)obj;
-        
-        NSArray *arrList = (NSArray *) dic[@"list"];
-        
-        if (arrList.count > 0) {
+//        [self.raTreeView expandRowForItem:item expandChildren:YES withRowAnimation:RATreeViewRowAnimationNone];
+        if (![item.name isEqualToString:@"王美丽"]) {
             
-            NameCardModel *nameCard = [NameCardModel objectWithNoChildren:dic[@"title"]];
-            
-            [father addChild:nameCard];
-            [self recursiveAllChildrens:arrList withFather:nameCard];
-            
+            [item.children enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                
+                NameCardModel *model = (NameCardModel *)obj;
+                
+                if (![model.name isEqualToString:@"王美丽"]) {
+                    
+                    [self findChildren:model withFather:item];
+                }else {
+                    [self.raTreeView expandRowForItem:item expandChildren:YES withRowAnimation:RATreeViewRowAnimationNone];
+                }
+                
+            }];
         }else {
-            
-            NameCardModel *nameCard = [NameCardModel objectWithNoChildren:dic[@"title"]];
-            [father addChild:nameCard];
-            
+            [self.raTreeView expandRowForItem:item expandChildren:YES withRowAnimation:RATreeViewRowAnimationNone];
         }
         
-    }];
-    
+    }
 }
+
+//找到子节点并打开
+-(void)findChildren:(NameCardModel *)currentModel withFather:(NameCardModel *)father {
+    
+    if (![currentModel.name isEqualToString:@"王美丽"]) {
+        
+        [currentModel.children enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            NameCardModel *model = (NameCardModel *)obj;
+            
+            if (![model.name isEqualToString:@"王美丽"]) {
+                
+                [self findChildren:model withFather:father];
+            }else {
+                [self.raTreeView expandRowForItem:father expandChildren:YES withRowAnimation:RATreeViewRowAnimationNone];
+            }
+            
+        }];
+    }else {
+        [self.raTreeView expandRowForItem:father expandChildren:YES withRowAnimation:RATreeViewRowAnimationNone];
+    }
+}
+
 
 //加载数据
 - (void)setData {
@@ -106,6 +124,34 @@
             
             NameCardModel *nameCard = [NameCardModel objectWithNoChildren:dicLevel1[@"title"]];
             [self.nameCardsArray addObject:nameCard];
+        }
+        
+    }];
+    
+}
+
+//循环遍历
+-(void)recursiveAllChildrens:(NSArray *)array withFather:(NameCardModel *)father {
+    
+    
+    [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        NSDictionary *dic = (NSDictionary *)obj;
+        
+        NSArray *arrList = (NSArray *) dic[@"list"];
+        
+        if (arrList.count > 0) {
+            
+            NameCardModel *nameCard = [NameCardModel objectWithNoChildren:dic[@"title"]];
+            
+            [father addChild:nameCard];
+            [self recursiveAllChildrens:arrList withFather:nameCard];
+            
+        }else {
+            
+            NameCardModel *nameCard = [NameCardModel objectWithNoChildren:dic[@"title"]];
+            [father addChild:nameCard];
+            
         }
         
     }];
